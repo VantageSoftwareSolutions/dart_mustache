@@ -1,15 +1,19 @@
-import 'package:mustache_template/mustache.dart' as m;
-
-class TemplateException implements m.TemplateException {
+/// [TemplateException] is used to obtain the line and column numbers
+/// of the token which caused parse or render to fail.
+class TemplateException {
   TemplateException(this.message, this.templateName, this.source, this.offset);
 
-  @override
+  /// A message describing the problem parsing or rendering the template.
   final String message;
-  @override
+
+  /// The name used to identify the template, as passed to the Template
+  /// constructor.
   final String? templateName;
-  @override
+
+  /// The template source.
   final String? source;
-  @override
+
+  /// The character offset within the template source.
   final int? offset;
 
   bool _isUpdated = false;
@@ -17,19 +21,20 @@ class TemplateException implements m.TemplateException {
   late int _column;
   late String _context;
 
-  @override
+  /// The 1-based line number of the token where formatting error was found.
   int get line {
     _update();
     return _line;
   }
 
-  @override
+  /// The 1-based column number of the token where formatting error was found.
   int get column {
     _update();
     return _column;
   }
 
-  @override
+  /// A short source substring of the source at the point the problem occurred
+  /// with parsing or rendering.
   String get context {
     _update();
     return _context;

@@ -1,12 +1,12 @@
-import 'package:mustache_template/mustache.dart' as m;
-
 import 'node.dart';
 import 'parser.dart' as parser;
 import 'renderer.dart';
 import 'template_exception.dart';
 
-/// Passed as an argument to a mustache lambda function.
-class LambdaContext implements m.LambdaContext {
+/// Passed as an argument to a mustache lambda function. The methods on
+/// this object may only be called before the lambda function returns. If a
+/// method is called after it has returned an exception will be thrown.
+class LambdaContext {
   final Node _node;
   final Renderer _renderer;
   bool _closed = false;
@@ -26,7 +26,9 @@ class LambdaContext implements m.LambdaContext {
         msg, _renderer.templateName, _renderer.source, _node.start);
   }
 
-  @override
+  /// Render the current section tag in the current context and return the
+  /// result as a string. If provided, value will be added to the top of the
+  /// context's stack.
   String renderString({Object? value}) {
     _checkClosed();
     if (_node is! SectionNode) {
@@ -45,7 +47,8 @@ class LambdaContext implements m.LambdaContext {
     renderer.render(section.children);
   }
 
-  @override
+  /// Render and directly output the current section tag. If provided, value
+  /// will be added to the top of the context's stack.
   void render({Object? value}) {
     _checkClosed();
     if (_node is! SectionNode) {
@@ -54,13 +57,14 @@ class LambdaContext implements m.LambdaContext {
     _renderSubtree(_renderer.sink, value);
   }
 
-  @override
+  /// Output a string. The output will not be html escaped, and will be written
+  /// before the output returned from the lambda.
   void write(Object object) {
     _checkClosed();
     _renderer.write(object);
   }
 
-  @override
+  /// Get the unevaluated template source for the current section tag.
   String get source {
     _checkClosed();
 
@@ -77,7 +81,8 @@ class LambdaContext implements m.LambdaContext {
     return _renderer.source.substring(node.contentStart, node.contentEnd);
   }
 
-  @override
+  /// Evaluate the string as a mustache template using the current context. If
+  /// provided, value will be added to the top of the context's stack.
   String renderSource(String source, {Object? value}) {
     _checkClosed();
     var sink = StringBuffer();
@@ -101,7 +106,7 @@ class LambdaContext implements m.LambdaContext {
     return sink.toString();
   }
 
-  @override
+  /// Lookup the value of a variable in the current context.
   Object? lookup(String variableName) {
     _checkClosed();
     return _renderer.resolveValue(variableName);
