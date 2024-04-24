@@ -2,6 +2,7 @@ import 'src/lambda_context.dart';
 import 'src/template.dart';
 
 export 'src/lambda_context.dart';
+export 'src/renderer.dart';
 export 'src/template.dart';
 export 'src/template_exception.dart';
 

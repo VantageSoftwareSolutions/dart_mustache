@@ -5,7 +5,7 @@ import 'node.dart';
 import 'template.dart';
 import 'template_exception.dart';
 
-const Object noSuchProperty = Object();
+const Object _noSuchProperty = Object();
 final RegExp _integerTag = RegExp(r'^[0-9]+$');
 
 class Renderer extends Visitor {
@@ -81,7 +81,7 @@ class Renderer extends Visitor {
       context.close();
     }
 
-    if (value == noSuchProperty) {
+    if (value == _noSuchProperty) {
       if (!lenient) {
         throw error('Value was missing for variable tag: ${node.name}.', node);
       }
@@ -115,7 +115,7 @@ class Renderer extends Visitor {
       _renderWithValue(node, value);
     } else if (value == false) {
       // Do nothing.
-    } else if (value == noSuchProperty) {
+    } else if (value == _noSuchProperty) {
       if (!lenient) {
         throw error('Value was missing for section tag: ${node.name}.', node);
       }
@@ -139,7 +139,7 @@ class Renderer extends Visitor {
       _renderWithValue(node, node.name);
     } else if (value == true || value is Map || value is Iterable) {
       // Do nothing.
-    } else if (value == noSuchProperty) {
+    } else if (value == _noSuchProperty) {
       if (lenient) {
         _renderWithValue(node, null);
       } else {
@@ -188,16 +188,16 @@ class Renderer extends Visitor {
       return _stack.last;
     }
     var parts = name.split('.');
-    Object? object = noSuchProperty;
+    Object? object = _noSuchProperty;
     for (var o in _stack.reversed) {
       object = _getNamedProperty(o, parts[0]);
-      if (object != noSuchProperty) {
+      if (object != _noSuchProperty) {
         break;
       }
     }
     for (var i = 1; i < parts.length; i++) {
-      if (object == noSuchProperty) {
-        return noSuchProperty;
+      if (object == _noSuchProperty) {
+        return _noSuchProperty;
       }
       object = _getNamedProperty(object, parts[i]);
     }
@@ -217,7 +217,7 @@ class Renderer extends Visitor {
         return object[index];
       }
     }
-    return noSuchProperty;
+    return _noSuchProperty;
   }
 
   TemplateException error(String message, Node node) => TemplateException(message, templateName, source, node.start);
